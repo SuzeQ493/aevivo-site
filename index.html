@@ -63,7 +63,14 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
 .nav-links{display:flex;gap:32px;list-style:none}
 .nav-links a{font-size:13px;font-weight:500;letter-spacing:0.04em;color:var(--slate);transition:color 0.2s}
 .nav-links a:hover{color:var(--navy)}
-@media(max-width:768px){.nav-links{display:none}.nav-search-btn{display:none}}
+@media(max-width:768px){
+  .nav-links{display:none}.nav-search-btn{display:none}
+  .hamburger{display:flex !important}
+  .modal{padding:28px 20px;width:95%}
+  .journal-grid,.pipeline,.value-grid{grid-template-columns:1fr !important}
+  .nl-form{flex-direction:column;align-items:center}
+  .nl-input{width:100%}
+}
 .nav-actions{display:flex;align-items:center;gap:16px}
 .nav-search-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;color:var(--slate);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s}
 .nav-search-btn:hover{border-color:var(--gold);color:var(--ink)}
@@ -271,6 +278,25 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
 .nl-input::placeholder{color:var(--slate);opacity:0.5}
 .nl-input:focus{border-color:var(--gold)}
 .nl-note{font-size:11px;color:var(--slate);opacity:0.6;margin-top:12px}
+.nl-success{color:var(--gold);font-family:'Libre Baskerville',serif;font-size:16px;padding:20px 0}
+
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,27,61,0.6);z-index:9998;display:none;opacity:0;transition:opacity 0.3s}
+.modal-overlay.open{display:block;opacity:1}
+.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--white);border-radius:6px;max-width:680px;width:90%;max-height:80vh;overflow-y:auto;z-index:9999;padding:48px;display:none;box-shadow:0 24px 80px rgba(0,0,0,0.2)}
+.modal.open{display:block}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:24px;color:var(--slate);cursor:pointer;transition:color 0.2s}
+.modal-close:hover{color:var(--navy)}
+.modal h2{font-family:'Libre Baskerville',serif;font-size:24px;color:var(--navy);margin-bottom:20px}
+.modal h3{font-family:'Libre Baskerville',serif;font-size:16px;color:var(--navy);margin:24px 0 10px}
+.modal p{font-size:13px;color:var(--slate);line-height:1.75;margin-bottom:14px;font-weight:300}
+.modal ul{list-style:disc;padding-left:20px;margin-bottom:14px}
+.modal ul li{font-size:13px;color:var(--slate);line-height:1.75;font-weight:300;margin-bottom:6px}
+.modal .modal-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--navy);color:var(--white);padding:14px 28px;border-radius:4px;font-size:13px;font-weight:500;z-index:10000;transition:transform 0.4s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ─── FOOTER ─── */
 footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 40px 36px}
@@ -386,7 +412,7 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
 <!-- Nav -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-logo">
+    <a href="#home" class="nav-logo">
       <div class="logo-mark"><span class="logo-mark-letter">A</span></div>
       <div class="logo-text-wrap">
         <span class="logo-name">AEVIVO</span>
@@ -402,7 +428,12 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
       <li><a href="#assessment">Assessment</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <div class="nav-actions">
+    <button class="hamburger" onclick="toggleMobileNav()" style="display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:8px;margin-right:8px">
+        <span style="width:22px;height:2px;background:var(--navy);border-radius:2px"></span>
+        <span style="width:22px;height:2px;background:var(--navy);border-radius:2px"></span>
+        <span style="width:22px;height:2px;background:var(--navy);border-radius:2px"></span>
+      </button>
+      <div class="nav-actions">
       <button class="cart-btn" onclick="openCart()">
         🛒 Cart
         <span class="cart-badge" id="cart-badge">0</span>
@@ -410,6 +441,15 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
     </div>
   </div>
 </nav>
+
+<div id="mobile-nav" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:9990;padding:80px 32px 32px;flex-direction:column;gap:0">
+  <button onclick="toggleMobileNav()" style="position:absolute;top:20px;right:24px;background:none;border:none;font-size:28px;color:var(--navy);cursor:pointer">&times;</button>
+  <a href="#catalog" onclick="toggleMobileNav()" style="font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);padding:18px 0;border-bottom:1px solid var(--border);display:block">Catalog</a>
+  <a href="#science" onclick="toggleMobileNav()" style="font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);padding:18px 0;border-bottom:1px solid var(--border);display:block">Science</a>
+  <a href="#quality" onclick="toggleMobileNav()" style="font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);padding:18px 0;border-bottom:1px solid var(--border);display:block">Quality</a>
+  <a href="#assessment" onclick="toggleMobileNav()" style="font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);padding:18px 0;border-bottom:1px solid var(--border);display:block">Assessment</a>
+  <a href="#faq" onclick="toggleMobileNav()" style="font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);padding:18px 0;border-bottom:1px solid var(--border);display:block">FAQ</a>
+</div>
 
 <!-- Hero -->
 <section class="hero" id="home">
@@ -472,7 +512,7 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
       <p class="hero-p">53 research compounds synthesized in EU GMP-certified facilities with over 30 years of peptide manufacturing expertise. Every batch HPLC verified. Full Certificate of Analysis included.</p>
       <div class="hero-btns">
         <button class="btn-hero-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Browse Catalog</button>
-        <button class="btn-hero-outline">View Sample CoA</button>
+        <button class="btn-hero-outline" onclick="window.open('AEVIVO-BPC157-CoA.pdf','_blank')">View Sample CoA</button>
       </div>
       <div class="hero-metrics">
         <div class="hero-metric"><span class="hm-val">EU</span><span class="hm-lbl">Synthesized</span></div>
@@ -883,7 +923,12 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
       <div class="assess-result" id="assess-result">
         <div class="assess-result-icon">✓</div>
         <h3>Protocol request submitted</h3>
-        <p>Thank you. Our team will review your assessment and send your personalised peptide protocol within 24 hours. Check your email for next steps.</p>
+        <p>Thank you. Our team will review your assessment and send your personalised peptide protocol within 24 hours.</p>
+        <div style="margin-top:20px">
+          <input type="email" class="nl-input" id="assess-email" placeholder="Your email for the protocol" style="max-width:320px;margin:0 auto 12px;display:block">
+          <button class="btn-hero-primary" onclick="submitAssessment()" style="font-size:11px;padding:12px 24px">Send my protocol</button>
+        </div>
+        <p id="assess-confirm" style="display:none;color:var(--gold);margin-top:16px;font-family:'Libre Baskerville',serif">Protocol request received. We'll be in touch soon.</p>
       </div>
 
       <!-- Navigation -->
@@ -910,7 +955,7 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
     <div class="section-eyebrow">Stay Updated</div>
     <h2 class="section-h2">New Compounds & Research Updates</h2>
     <p class="section-sub">New product announcements, published research references, and early access to limited release compounds.</p>
-    <form class="nl-form" onsubmit="return false">
+    <form class="nl-form" onsubmit="return nlSubmit(this)">
       <input type="email" class="nl-input" placeholder="Your email address">
       <button class="btn-hero-primary" type="submit">Subscribe</button>
     </form>
@@ -929,31 +974,31 @@ footer{background:var(--linen);border-top:1px solid var(--border);padding:60px 4
       <div>
         <div class="foot-col-h">Catalog</div>
         <ul class="foot-links">
-          <li><a href="#">All Compounds</a></li>
-          <li><a href="#">Recovery & Tissue</a></li>
-          <li><a href="#">Longevity & Cellular</a></li>
-          <li><a href="#">GH Secretagogues</a></li>
-          <li><a href="#">Immune & Bioregulator</a></li>
+          <li><a href="#catalog" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">All Compounds</a></li>
+          <li><a href="#catalog" onclick="setTimeout(()=>filterCat('Recovery'),300)">Recovery & Tissue</a></li>
+          <li><a href="#catalog" onclick="setTimeout(()=>filterCat('Longevity'),300)">Longevity & Cellular</a></li>
+          <li><a href="#catalog" onclick="setTimeout(()=>filterCat('GH Sec'),300)">GH Secretagogues</a></li>
+          <li><a href="#catalog" onclick="setTimeout(()=>filterCat('Immune'),300)">Immune & Bioregulator</a></li>
         </ul>
       </div>
       <div>
         <div class="foot-col-h">Resources</div>
         <ul class="foot-links">
-          <li><a href="#">CoA Library</a></li>
-          <li><a href="#">Research References</a></li>
-          <li><a href="#">Reconstitution Guide</a></li>
-          <li><a href="#">Storage Protocols</a></li>
-          <li><a href="#">FAQ</a></li>
+          <li><a href="AEVIVO-BPC157-CoA.pdf" target="_blank">CoA Library</a></li>
+          <li><a href="#science">Research References</a></li>
+          <li><a href="javascript:void(0)" onclick="showModal('reconstitution')">Reconstitution Guide</a></li>
+          <li><a href="javascript:void(0)" onclick="showModal('storage')">Storage Protocols</a></li>
+          <li><a href="#faq">FAQ</a></li>
         </ul>
       </div>
       <div>
         <div class="foot-col-h">Company</div>
         <ul class="foot-links">
-          <li><a href="#">About Aevivo</a></li>
-          <li><a href="#">Wholesale Inquiry</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="javascript:void(0)" onclick="showModal('about')">About Aevivo</a></li>
+          <li><a href="mailto:wholesale@aevivolongevity.com">Wholesale Inquiry</a></li>
+          <li><a href="mailto:info@aevivolongevity.com">Contact</a></li>
+          <li><a href="javascript:void(0)" onclick="showModal('terms')">Terms of Service</a></li>
+          <li><a href="javascript:void(0)" onclick="showModal('privacy')">Privacy Policy</a></li>
         </ul>
       </div>
     </div>
@@ -1231,6 +1276,26 @@ function toggleFAQ(btn) {
 
 // &#9472;&#9472; SCROLL REVEAL &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
 function initReveal() {
+
+
+// ── NEWSLETTER SUBMIT ──────────────────────────────────────────────
+function nlSubmit(form) {
+  const email = form.querySelector('input[type="email"]').value;
+  if (!email) return false;
+  form.innerHTML = '<div class="nl-success">Thank you! You\'ll receive updates at ' + email.split('@')[0] + '@...</div>';
+  showToast('Subscribed successfully');
+  return false;
+}
+
+// ── TOAST NOTIFICATION ─────────────────────────────────────────────
+function showToast(msg) {
+  let t = document.getElementById('aev-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'aev-toast'; t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
   const els = document.querySelectorAll('.journal-card,.pipe-step,.val-card');
   els.forEach((el, i) => {
     el.style.opacity = '0';
@@ -1251,6 +1316,72 @@ init();
 initReveal();
 
 // &#9472;&#9472; ASSESSMENT &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
+const modalContent = {
+  about: {
+    title: 'About AEVIVO',
+    body: '<div class="modal-eyebrow">Our Story</div><p>AEVIVO Longevity Research B.V. was founded to make European-grade research peptides accessible to researchers worldwide. Over 30 years of peptide manufacturing expertise, rigorous GMP standards, cutting-edge synthesis.</p><h3>Our Approach</h3><p>Every compound is synthesized in EU GMP-certified facilities using solid-phase peptide synthesis (Fmoc chemistry). Each batch undergoes HPLC purity and ESI-MS identity verification, shipping with a full Certificate of Analysis.</p><h3>Contact</h3><p>General: <strong>info@aevivolongevity.com</strong><br>Wholesale: <strong>wholesale@aevivolongevity.com</strong></p>'
+  },
+  terms: {
+    title: 'Terms of Service',
+    body: '<div class="modal-eyebrow">Legal</div><p><em>Last updated: April 2026</em></p><h3>1. Research Use Only</h3><p>All products are intended exclusively for in vitro laboratory research and educational purposes. Not for human or animal consumption.</p><h3>2. Orders</h3><p>Prices in EUR, exclude VAT and shipping. Confirmed upon payment receipt.</p><h3>3. Shipping</h3><p>Shipped from EU in temperature-controlled packaging. Timeframes are estimates.</p><h3>4. Returns</h3><p>All sales final. Contact within 48 hours for damaged/incorrect items.</p><h3>5. Governing Law</h3><p>Governed by the laws of the Netherlands.</p>'
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    body: '<div class="modal-eyebrow">Data Protection</div><p><em>Last updated: April 2026</em></p><h3>Data We Collect</h3><p>Name, email, shipping address, order details, and standard analytics.</p><h3>How We Use It</h3><p>To process orders, send confirmations, respond to inquiries. We never sell your data.</p><h3>Your Rights (GDPR)</h3><p>Access, rectify, or delete your data anytime: <strong>info@aevivolongevity.com</strong>.</p>'
+  },
+  reconstitution: {
+    title: 'Reconstitution Guide',
+    body: '<div class="modal-eyebrow">Technical Reference</div><h3>Lyophilized Peptides</h3><p>Wipe stopper with alcohol swab. Inject bacteriostatic water slowly down the vial wall. Allow to dissolve naturally; do not shake.</p><h3>Recommended Volumes</h3><ul><li><strong>5 mg vial:</strong> 1\u20132 ml BAC water</li><li><strong>10 mg vial:</strong> 2\u20133 ml BAC water</li></ul><h3>Important</h3><ul><li>Use sterile technique</li><li>Store reconstituted at 2\u20138\u00b0C, use within 30 days</li><li>Avoid freeze-thaw cycles</li></ul>'
+  },
+  storage: {
+    title: 'Storage Protocols',
+    body: '<div class="modal-eyebrow">Technical Reference</div><h3>Lyophilized</h3><ul><li>Short-term: 2\u20138\u00b0C</li><li>Long-term: -20\u00b0C</li></ul><h3>Reconstituted</h3><ul><li>2\u20138\u00b0C, use within 30 days</li></ul><h3>Pre-Mixed</h3><ul><li>2\u20138\u00b0C, use before expiry</li></ul><p>All products ship sealed under inert atmosphere with desiccant and cold chain packaging.</p>'
+  }
+};
+
+function showModal(key) {
+  const data = modalContent[key];
+  if (!data) return;
+  document.getElementById('modal-title').innerHTML = data.title;
+  document.getElementById('modal-body').innerHTML = data.body;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-box').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('modal-box').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function submitAssessment() {
+  const email = document.getElementById('assess-email').value;
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+  const selections = {};
+  document.querySelectorAll('.assess-opt-full.selected, .assess-toggle.selected').forEach(b => {
+    const group = b.dataset.group || 'general';
+    if (!selections[group]) selections[group] = [];
+    selections[group].push(b.dataset.val || b.textContent.trim());
+  });
+  console.log('Assessment data:', { email, selections });
+  document.getElementById('assess-email').style.display = 'none';
+  document.querySelector('#assess-result button').style.display = 'none';
+  document.getElementById('assess-confirm').style.display = 'block';
+  showToast('Protocol request sent to ' + email);
+}
+
+function toggleMobileNav() {
+  const nav = document.getElementById('mobile-nav');
+  nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function filterCat(keyword) {
+  const btns = document.querySelectorAll('.cat-btn');
+  btns.forEach(b => { if (b.textContent.includes(keyword)) b.click(); });
+}
+
+
 let assessStep = 1;
 const TOTAL_STEPS = 6;
 
@@ -1308,6 +1439,15 @@ function assessNav(dir) {
 if(!window.location.hash){window.scrollTo(0,0);}
 window.addEventListener('beforeunload',function(){window.scrollTo(0,0);});
 </script>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
+<div class="modal" id="modal-box">
+  <button class="modal-close" onclick="closeModal()">&times;</button>
+  <h2 id="modal-title"></h2>
+  <div id="modal-body"></div>
+</div>
+
 </body>
 </html>
 
