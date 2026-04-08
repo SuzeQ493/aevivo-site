@@ -1283,6 +1283,11 @@ function assessNav(dir) {
   // Change button text on last step
   document.getElementById('assess-next').textContent = assessStep === TOTAL_STEPS ? 'Get my protocol' : 'Continue';
 }
+
+
+// Force scroll to top on page load
+if(!window.location.hash){window.scrollTo(0,0);}
+window.addEventListener('beforeunload',function(){window.scrollTo(0,0);});
 </script>
 </body>
 </html>
