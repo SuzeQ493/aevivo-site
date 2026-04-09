@@ -1310,8 +1310,26 @@ function initReveal() {
 function nlSubmit(form) {
   const email = form.querySelector('input[type="email"]').value;
   if (!email) return false;
-  form.innerHTML = '<div class="nl-success">Thank you! You\'ll receive updates at ' + email.split('@')[0] + '@...</div>';
-  showToast('Subscribed successfully');
+  const btn = form.querySelector('button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
+  fetch('https://formsubmit.co/ajax/suzannahowse@yahoo.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      email: email,
+      _subject: 'New AEVIVO Newsletter Subscriber',
+      _template: 'table',
+      _autoresponse: 'Thank you for subscribing to AEVIVO Longevity Research! You will receive updates on European-grade peptide research, exclusive offers, and longevity science insights. - The AEVIVO Team'
+    })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    showToast('Thanks for subscribing! Check your email for confirmation.');
+    form.innerHTML = '<div class="nl-success">Thank you! You will receive updates at ' + email.split('@')[0] + '@...</div>';
+    if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
+  }).catch(function(err) {
+    showToast('Thanks for subscribing! We will keep you updated.');
+    form.innerHTML = '<div class="nl-success">Thank you! You will receive updates at ' + email.split('@')[0] + '@...</div>';
+    if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
+  });
   return false;
 }
 
@@ -1383,19 +1401,27 @@ function closeModal() {
 }
 
 function submitAssessment() {
-  const email = document.getElementById('assess-email').value;
-  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
-  const selections = {};
-  document.querySelectorAll('.assess-opt-full.selected, .assess-toggle.selected').forEach(b => {
-    const group = b.dataset.group || 'general';
-    if (!selections[group]) selections[group] = [];
-    selections[group].push(b.dataset.val || b.textContent.trim());
+  var answers = {};
+  document.querySelectorAll('.assess-opt.selected').forEach(function(el) {
+    var q = el.closest('.assess-q');
+    if (q) { var h = q.querySelector('h3'); if (h) answers[h.textContent.trim()] = el.textContent.trim(); }
   });
-  console.log('Assessment data:', { email, selections });
-  document.getElementById('assess-email').style.display = 'none';
-  document.querySelector('#assess-result button').style.display = 'none';
-  document.getElementById('assess-confirm').style.display = 'block';
-  showToast('Protocol request sent to ' + email);
+  if (Object.keys(answers).length === 0) { showToast('Please answer at least one question.'); return; }
+  var resultsDiv = document.getElementById('assessResults');
+  if (resultsDiv) resultsDiv.style.display = 'block';
+  fetch('https://formsubmit.co/ajax/suzannahowse@yahoo.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      _subject: 'New AEVIVO Peptide Assessment Submission',
+      _template: 'table',
+      assessment_answers: JSON.stringify(answers)
+    })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    showToast('Assessment submitted! We will review your responses.');
+  }).catch(function(err) {
+    showToast('Assessment recorded. Thank you!');
+  });
 }
 
 function toggleMobileNav() {
